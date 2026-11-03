@@ -13,6 +13,9 @@ const User = sequelize.define('user', {
   unique: true,
   validate: {
     notEmpty: true,
+    isEmail: {
+     msg: 'username must be a valid email address',
+    }
   },
 },
 })
