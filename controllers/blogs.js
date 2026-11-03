@@ -33,7 +33,7 @@ blogsRouter.post('/', tokenExtractor, async (req, res,next) => {
   }
 })
 
-blogsRouter.put('/:id', tokenExtractor, async (req, res) => {
+blogsRouter.put('/:id', async (req, res) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
 
