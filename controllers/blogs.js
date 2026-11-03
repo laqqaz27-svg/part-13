@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const tokenExtractor = require('../middleware/tokenExtractor')
 
 blogsRouter.get('/', async (req, res) => {
   try {
@@ -10,7 +11,7 @@ blogsRouter.get('/', async (req, res) => {
   }
 })
 
-blogsRouter.post('/', async (req, res) => {
+blogsRouter.post('/', tokenExtractor, async (req, res,next) => {
   try {
     const { author, url, title, likes } = req.body
 
@@ -23,6 +24,7 @@ blogsRouter.post('/', async (req, res) => {
       url,
       title,
       likes: likes ?? 0,
+      userId: req.user.id
     })
 
     res.status(201).json(blog)
@@ -31,7 +33,7 @@ blogsRouter.post('/', async (req, res) => {
   }
 })
 
-blogsRouter.put('/:id', async (req, res) => {
+blogsRouter.put('/:id', tokenExtractor, async (req, res) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
 
@@ -54,7 +56,7 @@ blogsRouter.put('/:id', async (req, res) => {
   }
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete('/:id', tokenExtractor, async (req, res) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
 

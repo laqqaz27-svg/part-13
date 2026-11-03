@@ -1,11 +1,11 @@
+require('dotenv').config()
 const { sequelize } = require('../util/db')
-require('./blog')
-require('./user')
+require('./associations')
 
 const main = async () => {
   try {
     await sequelize.authenticate()
-    await sequelize.sync()
+    await sequelize.sync({ alter: true })
     console.log('Database connected and models synchronized.')
   } catch (error) {
     console.error('Database setup failed:', error.message)
