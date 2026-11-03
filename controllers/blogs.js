@@ -1,0 +1,72 @@
+const blogsRouter = require('express').Router()
+const Blog = require('../models/blog')
+
+blogsRouter.get('/', async (req, res) => {
+  try {
+    const blogs = await Blog.findAll()
+    res.json(blogs)
+  } catch (error) {
+    res.status(500).json({ error: 'Could not fetch blogs' })
+  }
+})
+
+blogsRouter.post('/', async (req, res) => {
+  try {
+    const { author, url, title, likes } = req.body
+
+    if (!url || !title) {
+      return res.status(400).json({ error: 'title and url are required' })
+    }
+
+    const blog = await Blog.create({
+      author,
+      url,
+      title,
+      likes: likes ?? 0,
+    })
+
+    res.status(201).json(blog)
+  } catch (error) {
+    res.status(400).json({ error: 'Could not create blog' })
+  }
+})
+
+blogsRouter.put('/:id', async (req, res) => {
+  try {
+    const blog = await Blog.findByPk(req.params.id)
+
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' })
+    }
+
+    const { likes } = req.body
+
+    if (!Number.isInteger(likes) || likes < 0) {
+      return res.status(400).json({ error: 'likes must be a non-negative integer' })
+    }
+
+    blog.likes = likes
+    await blog.save()
+
+    res.json(blog)
+  } catch (error) {
+    res.status(400).json({ error: 'Could not update blog' })
+  }
+})
+
+blogsRouter.delete('/:id', async (req, res) => {
+  try {
+    const blog = await Blog.findByPk(req.params.id)
+
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' })
+    }
+
+    await blog.destroy()
+    res.status(204).end()
+  } catch (error) {
+    res.status(400).json({ error: 'Could not delete blog' })
+  }
+})
+
+module.exports = blogsRouter
