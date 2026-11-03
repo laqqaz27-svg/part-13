@@ -5,7 +5,9 @@ const Blog = require('./models/blog')
 const main = async () => {
   try {
     const blogs = await Blog.findAll()
-    console.table(blogs.map(blog => blog.toJSON()))
+   blogs.forEach((blog) => {
+  console.log(`${blog.author}: '${blog.title}', ${blog.likes} likes`)
+})
   } catch (error) {
     console.error('Could not read blogs:', error.message)
     process.exitCode = 1
