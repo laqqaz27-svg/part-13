@@ -29,11 +29,11 @@ blogsRouter.post('/', tokenExtractor, async (req, res,next) => {
 
     res.status(201).json(blog)
   } catch (error) {
-    res.status(400).json({ error: 'Could not create blog' })
+    next(error)
   }
 })
 
-blogsRouter.put('/:id', async (req, res) => {
+blogsRouter.put('/:id', async (req, res, next) => {
   try {
     const blog = await Blog.findByPk(req.params.id)
 
@@ -52,7 +52,7 @@ blogsRouter.put('/:id', async (req, res) => {
 
     res.json(blog)
   } catch (error) {
-    res.status(400).json({ error: 'Could not update blog' })
+   next(error)
   }
 })
 
@@ -67,7 +67,7 @@ blogsRouter.delete('/:id', tokenExtractor, async (req, res) => {
     await blog.destroy()
     res.status(204).end()
   } catch (error) {
-    res.status(400).json({ error: 'Could not delete blog' })
+    next(error)
   }
 })
 
