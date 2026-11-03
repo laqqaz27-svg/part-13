@@ -32,8 +32,22 @@ usersRouter.put('/:username', async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    user.username = req.body.username
+  user.name = req.body.name
     await user.save()
+    res.json(user)
+  } catch (error) {
+    next(error)
+  }
+})
+
+usersRouter.get('/:id', async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.params.id)
+
+    if (!user) {
+      return res.status(404).end()
+    }
+
     res.json(user)
   } catch (error) {
     next(error)
