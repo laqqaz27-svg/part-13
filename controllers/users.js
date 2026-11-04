@@ -23,7 +23,7 @@ usersRouter.get('/:id', async (req, res, next) => {
         as: 'readingList',
         attributes: ['id', 'url', 'title', 'author', 'likes', 'year'],
         through: {
-          attributes: [],
+          attributes: ['id', 'read'],
         },
       },
     })
@@ -33,9 +33,20 @@ usersRouter.get('/:id', async (req, res, next) => {
     }
 
     const userData = user.toJSON()
-    const readings = userData.readingList || []
-    delete userData.readingList
 
+    const readings = (userData.readingList || []).map((blog) => {
+      const { readinglist, ...blogData } = blog
+
+      return {
+        ...blogData,
+        readingList: {
+          id: readinglist.id,
+          read: readinglist.read,
+        },
+      }
+    })
+
+    delete userData.readingList
     res.json({ ...userData, readings })
   } catch (error) {
     next(error)
