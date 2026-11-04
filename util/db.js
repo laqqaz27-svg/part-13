@@ -1,7 +1,12 @@
 require('dotenv').config()
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const databaseUrl =
+  process.env.TESTING === 'true'
+    ? process.env.TEST_DATABASE_URL
+    : process.env.DATABASE_URL
+
+const sequelize = new Sequelize(databaseUrl, {
   logging: false,
 })
 
