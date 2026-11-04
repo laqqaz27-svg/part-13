@@ -64,10 +64,14 @@ blogsRouter.delete('/:id', tokenExtractor, async (req, res) => {
       return res.status(404).json({ error: 'Blog not found' })
     }
 
+    if (blog.userId !== req.user.id) {
+      return res.status(403).json({ error: 'Only the blog owner can delete it' })
+    }
+
     await blog.destroy()
     res.status(204).end()
   } catch (error) {
-    next(error)
+    res.status(400).json({ error: 'Could not delete blog' })
   }
 })
 
