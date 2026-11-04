@@ -15,6 +15,33 @@ usersRouter.get('/', async (req, res, next) => {
   }
 })
 
+usersRouter.get('/:id', async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      include: {
+        model: Blog,
+        as: 'readingList',
+        attributes: ['id', 'url', 'title', 'author', 'likes', 'year'],
+        through: {
+          attributes: [],
+        },
+      },
+    })
+
+    if (!user) {
+      return res.status(404).end()
+    }
+
+    const userData = user.toJSON()
+    const readings = userData.readingList || []
+    delete userData.readingList
+
+    res.json({ ...userData, readings })
+  } catch (error) {
+    next(error)
+  }
+})
+
 usersRouter.post('/', async (req, res, next) => {
   try {
     const user = await User.create({
@@ -37,22 +64,8 @@ usersRouter.put('/:username', async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
-  user.name = req.body.name
+    user.name = req.body.name
     await user.save()
-    res.json(user)
-  } catch (error) {
-    next(error)
-  }
-})
-
-usersRouter.get('/:id', async (req, res, next) => {
-  try {
-    const user = await User.findByPk(req.params.id)
-
-    if (!user) {
-      return res.status(404).end()
-    }
-
     res.json(user)
   } catch (error) {
     next(error)
