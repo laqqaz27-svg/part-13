@@ -21,6 +21,7 @@ blogsRouter.get('/', async (req, res, next) => {
       include: {
         model: User,
       },
+      order: [['likes', 'DESC']],
     })
 
     res.json(blogs)
