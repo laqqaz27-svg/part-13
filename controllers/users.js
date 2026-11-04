@@ -9,6 +9,7 @@ usersRouter.get('/', async (req, res, next) => {
         model: Blog,
       },
     })
+
     res.json(users)
   } catch (error) {
     next(error)
@@ -34,17 +35,30 @@ usersRouter.get('/:id', async (req, res, next) => {
 
     const userData = user.toJSON()
 
-    const readings = (userData.readingList || []).map((blog) => {
-      const { readinglist, ...blogData } = blog
+    const readFilter =
+      req.query.read === 'true'
+        ? true
+        : req.query.read === 'false'
+          ? false
+          : undefined
 
-      return {
-        ...blogData,
-        readingList: {
-          id: readinglist.id,
-          read: readinglist.read,
-        },
-      }
-    })
+
+    const readings = (userData.readingList || [])
+      .map((blog) => {
+        const { readinglist, ...blogData } = blog
+
+        return {
+          ...blogData,
+          readingList: {
+            id: readinglist.id,
+            read: readinglist.read,
+          },
+        }
+      })
+      .filter(
+        (blog) =>
+          readFilter === undefined || blog.readingList.read === readFilter
+      )
 
     delete userData.readingList
     res.json({ ...userData, readings })
@@ -59,6 +73,7 @@ usersRouter.post('/', async (req, res, next) => {
       name: req.body.name,
       username: req.body.username,
     })
+
     res.status(201).json(user)
   } catch (error) {
     next(error)
