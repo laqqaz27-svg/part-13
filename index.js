@@ -1,13 +1,14 @@
 require('dotenv').config()
 const app = require('./app')
-const { sequelize } = require('./util/db')
+const { sequelize, runMigrations } = require('./util/db')
 
 const PORT = process.env.PORT || 3001
 
 const start = async () => {
   try {
     await sequelize.authenticate()
-    await sequelize.sync()
+    await runMigrations()
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`)
     })

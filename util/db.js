@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { Sequelize } = require('sequelize')
+const { Umzug, SequelizeStorage } = require('umzug')
 
 const databaseUrl =
   process.env.TESTING === 'true'
@@ -8,6 +9,28 @@ const databaseUrl =
 
 const sequelize = new Sequelize(databaseUrl, {
   logging: false,
+  define: {
+    underscored: true,
+  },
 })
 
-module.exports = { sequelize }
+const migrator = new Umzug({
+  migrations: {
+    glob: 'migrations/*.js',
+  },
+  storage: new SequelizeStorage({
+    sequelize,
+    tableName: 'migrations',
+  }),
+  context: sequelize.getQueryInterface(),
+  logger: console,
+})
+
+const runMigrations = async () => {
+  const migrations = await migrator.up()
+  console.log('Migrations up to date', {
+    files: migrations.map((migration) => migration.name),
+  })
+}
+
+module.exports = { sequelize, runMigrations }
