@@ -9,11 +9,13 @@ blogsRouter.get('/', async (req, res, next) => {
     const where = {}
 
     if (req.query.search) {
-      where.title = {
-        [Op.iLike]: `%${req.query.search}%`,
-      }
-    }
+  const pattern = `%${req.query.search}%`
 
+  where[Op.or] = [
+    { title: { [Op.iLike]: pattern } },
+    { author: { [Op.iLike]: pattern } },
+    ]
+   }
     const blogs = await Blog.findAll({
       where,
       include: {
