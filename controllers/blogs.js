@@ -1,13 +1,18 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const tokenExtractor = require('../middleware/tokenExtractor')
+const User = require('../models/user')
 
-blogsRouter.get('/', async (req, res) => {
+blogsRouter.get('/', async (req, res, next) => {
   try {
-    const blogs = await Blog.findAll()
+    const blogs = await Blog.findAll({
+      include: {
+        model: User,
+      },
+    })
     res.json(blogs)
   } catch (error) {
-    res.status(500).json({ error: 'Could not fetch blogs' })
+    next(error)
   }
 })
 

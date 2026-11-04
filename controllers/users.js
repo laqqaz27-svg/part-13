@@ -1,9 +1,14 @@
 const usersRouter = require('express').Router()
 const User = require('../models/user')
+const Blog = require('../models/blog')
 
 usersRouter.get('/', async (req, res, next) => {
   try {
-    const users = await User.findAll()
+    const users = await User.findAll({
+      include: {
+        model: Blog,
+      },
+    })
     res.json(users)
   } catch (error) {
     next(error)
