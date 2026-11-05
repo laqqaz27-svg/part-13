@@ -46,7 +46,7 @@ readinglistsRouter.put('/:id', tokenExtractor, async (req, res, next) => {
     }
 
     if (reading.userId !== req.user.id) {
-      return res.status(403).json({
+      return res.status(401).json({
         error: 'You can only update your own reading list',
       })
     }
