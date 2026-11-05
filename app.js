@@ -10,6 +10,7 @@ const loginRouter = require('./controllers/login')
 const errorHandler = require('./middleware/errorHandler')
 const authorsRouter = require('./controllers/authors')
 const readinglistsRouter = require('./controllers/readinglists')
+const logoutRouter = require('./controllers/logout')
 
 const app = express()
 app.use(express.json())
@@ -23,6 +24,7 @@ app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/authors', authorsRouter)
 app.use('/api/readinglists', readinglistsRouter)
+app.use('/api/logout', logoutRouter)
 
 app.post('/api/reset', async (req, res, next) => {
   try {

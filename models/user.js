@@ -18,6 +18,13 @@ const User = sequelize.define('user', {
     }
   },
 },
+
+disabled: {
+  type: DataTypes.BOOLEAN,
+  allowNull: false,
+  defaultValue: false,
+},
+
 })
 
 module.exports = User

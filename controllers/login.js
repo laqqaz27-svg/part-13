@@ -1,6 +1,7 @@
 const loginRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const Session = require('../models/session')
 
 loginRouter.post('/', async (req, res, next) => {
   try {
@@ -8,7 +9,7 @@ loginRouter.post('/', async (req, res, next) => {
       where: { username: req.body.username },
     })
 
-    if (!user) {
+    if (!user || user.disabled) {
       return res.status(401).json({ error: 'invalid username or password' })
     }
 
@@ -16,6 +17,8 @@ loginRouter.post('/', async (req, res, next) => {
       { username: user.username, id: user.id },
       process.env.SECRET
     )
+
+    await Session.create({ token, userId: user.id })
 
     res.json({ token, username: user.username, name: user.name })
   } catch (error) {
